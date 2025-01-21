@@ -15,6 +15,7 @@
         "-fdiagnostics-color=always",
         "-g",
         "${workspaceFolder}/main.c",
+        "${workspaceFolder}/app/*.c",
         "-o",
         "${workspaceFolder}/main.exe"
       ],
