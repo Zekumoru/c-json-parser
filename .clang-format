@@ -1,0 +1,18 @@
+# Use the default style as a base
+BasedOnStyle: llvm
+
+# Set pointer alignment
+PointerAlignment: Left
+
+# Control indentation within namespaces
+NamespaceIndentation: All  # Indents everything within a namespace
+IndentWidth: 2             # Sets the number of spaces or tabs for indentation
+
+# Set the rule for braces
+BreakBeforeBraces: Allman  # This places opening braces on a new line
+
+# Set a very high column limit to avoid wrapping comments
+ColumnLimit: 0  # Setting it to 0 disables the limit entirely
+
+# Ensure that binary operators are not broken if they appear in comments
+BreakBeforeBinaryOperators: None

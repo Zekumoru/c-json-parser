@@ -1,0 +1,32 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "shell",
+      "label": "Shell: Clear output executable",
+      "command": "rm",
+      "args": ["${workspaceFolder}/main.exe"]
+    },
+    {
+      "type": "cppbuild",
+      "label": "C/C++: gcc build app",
+      "command": "/usr/bin/g++",
+      "args": [
+        "-fdiagnostics-color=always",
+        "-g",
+        "${workspaceFolder}/main.c",
+        "-o",
+        "${workspaceFolder}/main.exe"
+      ],
+      "options": {
+        "cwd": "${fileDirname}"
+      },
+      "problemMatcher": ["$gcc"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "detail": "compiler: /usr/bin/gcc"
+    }
+  ]
+}
