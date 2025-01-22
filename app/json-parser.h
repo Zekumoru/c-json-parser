@@ -95,6 +95,18 @@ typedef struct JSONNode
   JSONValue value;
 } JSONNode;
 
+typedef enum ParserErrorType
+{
+  NO_PARSER_ERROR = 0,
+  UNEXPECTED_TOKEN,
+} ParserErrorType;
+
+typedef struct ParserError
+{
+  ParserErrorType type;
+  Token token;
+} ParserError;
+
 Token* advance(TokenManager* manager);
 
 JSONNode* parseObject(TokenManager* manager);
@@ -105,6 +117,6 @@ JSONNode* parseDouble(Token* token);
 JSONNode* parseBoolean(Token* token);
 JSONNode* parseNull(Token* token);
 
-JSONNode* parse(TokenManager* manager);
+JSONNode* parse(TokenManager* manager, ParserError* error);
 
 #endif // JSON_PARSER_C
