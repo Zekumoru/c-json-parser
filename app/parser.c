@@ -175,6 +175,7 @@ JsonNode* parseArray(FILE* jsonFile, TokenManager* manager, ParserError* error)
   if (token->type == BRACKET_CLOSE)
     return node;
 
+  manager->pos--;
   while (true)
   {
     JsonNode* elemNode = parse(jsonFile, manager, error);
