@@ -1,4 +1,5 @@
 #include "app/json-parser.h"
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -54,7 +55,19 @@ void printTokens(TokenManager* manager)
   }
 }
 
-void traverse(JsonNode* node)
+void printWithIndent(size_t indent, const char* fmt, ...)
+{
+  va_list args;
+  va_start(args, fmt);
+
+  for (size_t i = 0; i < indent; i++)
+    printf(" ");
+  vprintf(fmt, args);
+
+  va_end(args);
+}
+
+void traverse(JsonNode* node, size_t indent)
 {
   if (node == NULL)
     return;
@@ -62,43 +75,43 @@ void traverse(JsonNode* node)
   switch (node->type)
   {
   case NULL_NODE:
-    printf("NodeType: NULL_NODE\n");
+    printWithIndent(indent, "NULL_NODE\n");
     break;
   case STRING_NODE:
-    printf("NodeType: STRING_NODE\n");
-    printf("     Key: %s\n", node->key);
-    printf("   Value: %s\n", node->value.v_string);
+    printWithIndent(indent, "STRING_NODE\n");
+    printWithIndent(indent, "- Key: %s\n", node->key);
+    printWithIndent(indent, "- Value: %s\n", node->value.v_string);
     break;
   case INTEGER_NODE:
-    printf("NodeType: INTEGER_NODE\n");
+    printWithIndent(indent, "INTEGER_NODE\n");
     break;
   case DOUBLE_NODE:
-    printf("NodeType: DOUBLE_NODE\n");
+    printWithIndent(indent, "DOUBLE_NODE\n");
     break;
   case BOOLEAN_NODE:
-    printf("NodeType: BOOLEAN_NODE\n");
+    printWithIndent(indent, "BOOLEAN_NODE\n");
     break;
   case OBJECT_NODE:
   case ARRAY_NODE:
     JsonNode* nodeList;
     if (node->type == OBJECT_NODE)
     {
-      printf("NodeType: %s\n", node->key == NULL ? "ROOT_OBJECT_NODE" : "OBJECT_NODE");
-      if (node->key)
-        printf("     Key: %s\n", node->key);
+      printWithIndent(indent, "%s\n", node->key == NULL ? "ROOT_OBJECT_NODE" : "OBJECT_NODE");
+      if (node->key != NULL)
+        printWithIndent(indent, "- Key: %s\n", node->key);
       nodeList = node->value.v_object;
     }
     else
     {
-      printf("NodeType: ARRAY_NODE\n");
+      printWithIndent(indent, "ARRAY_NODE\n");
       nodeList = node->value.v_array;
     }
 
     for (size_t i = 0; i < node->vSize; i++)
-      traverse(&nodeList[i]);
+      traverse(&nodeList[i], indent + 2);
     break;
   default:
-    printf("NodeType: UNKNOWN_NODE\n");
+    printWithIndent(indent, "UNKNOWN_NODE\n");
   }
 }
 
@@ -165,7 +178,7 @@ int main()
   }
 
   printf("SYNTACTIC ANALYSIS\n");
-  traverse(root);
+  traverse(root, 0);
 
   // DON'T FORGET TO FREE THE PARSED JSON TREE
 
