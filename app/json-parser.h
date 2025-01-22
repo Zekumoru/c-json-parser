@@ -44,8 +44,6 @@ void deleteTokenManager(TokenManager* manager);
 
 Token* createToken(TokenManager* manager);
 
-Token* advance(TokenManager* manager);
-
 typedef enum LexErrorType
 {
   NO_LEX_ERROR = 0,
@@ -97,6 +95,15 @@ typedef struct JSONNode
   JSONValue value;
 } JSONNode;
 
-JSONNode* parse(Token* tokens);
+Token* advance(TokenManager* manager);
+
+JSONNode* parseObject(TokenManager* manager);
+JSONNode* parseArray(TokenManager* manager);
+JSONNode* parseString(Token* token);
+JSONNode* parseInteger(Token* token);
+JSONNode* parseDouble(Token* token);
+JSONNode* parseNull(Token* token);
+
+JSONNode* parse(TokenManager* manager);
 
 #endif // JSON_PARSER_C
