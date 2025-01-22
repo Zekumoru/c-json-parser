@@ -106,6 +106,7 @@ typedef enum ParserErrorType
   NO_PARSER_ERROR = 0,
   EXPECTED_OBJECT_KEY,
   EXPECTED_END_OF_OBJECT_BRACE,
+  EXPECTED_END_OF_ARRAY_BRACE,
   EXPECTED_COLON,
   EXPECTED_COMMA,
   UNEXPECTED_TOKEN,
@@ -120,9 +121,10 @@ typedef struct ParserError
 Token* advance(TokenManager* manager);
 
 void addObjectPair(JsonNode* node, JsonNode* pairNode);
+void addElement(JsonNode* node, JsonNode* elemNode);
 
 JsonNode* parseObject(TokenManager* manager, ParserError* error);
-JsonNode* parseArray(TokenManager* manager);
+JsonNode* parseArray(TokenManager* manager, ParserError* error);
 JsonNode* parseString(Token* token);
 JsonNode* parseInteger(Token* token);
 JsonNode* parseDouble(Token* token);
