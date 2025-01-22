@@ -102,6 +102,7 @@ JSONNode* parseArray(TokenManager* manager);
 JSONNode* parseString(Token* token);
 JSONNode* parseInteger(Token* token);
 JSONNode* parseDouble(Token* token);
+JSONNode* parseBoolean(Token* token);
 JSONNode* parseNull(Token* token);
 
 JSONNode* parse(TokenManager* manager);
