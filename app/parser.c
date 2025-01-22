@@ -10,6 +10,7 @@ JsonNode* createJsonNode(JsonNodeType type)
   node->type = type;
   node->key = NULL;
   node->value.v_object = NULL;
+  node->isRoot = false;
   node->vCapacity = 0;
   node->vSize = 0;
   return node;
@@ -25,7 +26,7 @@ Token* advance(TokenManager* manager)
   return token;
 }
 
-JsonNode* parse(FILE* jsonFile, TokenManager* manager, ParserError* error)
+JsonNode* parse_helper(FILE* jsonFile, TokenManager* manager, ParserError* error)
 {
   if (error && error->type != NO_PARSER_ERROR)
     return NULL;
@@ -55,6 +56,13 @@ JsonNode* parse(FILE* jsonFile, TokenManager* manager, ParserError* error)
     error->token = *token; // duplicate token in stack
   }
   return NULL;
+}
+
+JsonNode* parse(FILE* jsonFile, TokenManager* manager, ParserError* error)
+{
+  JsonNode* root = parse_helper(jsonFile, manager, error);
+  root->isRoot = true;
+  return root;
 }
 
 void addObjectPair(JsonNode* node, JsonNode* pairNode)
@@ -115,7 +123,7 @@ JsonNode* parseObject(FILE* jsonFile, TokenManager* manager, ParserError* error)
     }
 
     // Get object's pair value
-    JsonNode* valueNode = parse(jsonFile, manager, error);
+    JsonNode* valueNode = parse_helper(jsonFile, manager, error);
     valueNode->key = pairKey;
     if (valueNode == NULL || (error && error->type != NO_PARSER_ERROR))
       return node;
@@ -178,7 +186,7 @@ JsonNode* parseArray(FILE* jsonFile, TokenManager* manager, ParserError* error)
   manager->pos--;
   while (true)
   {
-    JsonNode* elemNode = parse(jsonFile, manager, error);
+    JsonNode* elemNode = parse_helper(jsonFile, manager, error);
     if (elemNode == NULL && error && error->type != NO_PARSER_ERROR)
       return node;
     addElement(node, elemNode);
@@ -339,6 +347,6 @@ void freeJsonTree(JsonNode* node)
   // Free root node which is an OBJECT node with no key
   // As for the other nodes, they're freed together above
   // inside the free(nodeList)
-  if (node->type == OBJECT_NODE && node->key == NULL)
+  if (node->isRoot)
     free(node);
 }
