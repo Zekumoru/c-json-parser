@@ -84,6 +84,8 @@ void traverse(JsonNode* node, size_t indent)
     break;
   case INTEGER_NODE:
     printWithIndent(indent, "INTEGER_NODE\n");
+    printWithIndent(indent, "- Key: %s\n", node->key);
+    printWithIndent(indent, "- Value: %d\n", node->value.v_int);
     break;
   case DOUBLE_NODE:
     printWithIndent(indent, "DOUBLE_NODE\n");
@@ -157,6 +159,9 @@ int main()
 
   switch (parserError.type)
   {
+  case INVALID_INTEGER_LITERAL:
+    printError("Syntax Error", parserError.token.lineCount, parserError.token.charCount, "Invalid integer literal");
+    break;
   case EXPECTED_OBJECT_KEY:
     printError("Syntax Error", parserError.token.lineCount, parserError.token.charCount, "Expected object key");
     break;

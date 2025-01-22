@@ -2,6 +2,7 @@
 #include "utils.h"
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 
 JsonNode* createJsonNode(JsonNodeType type)
 {
@@ -40,7 +41,7 @@ JsonNode* parse(FILE* jsonFile, TokenManager* manager, ParserError* error)
   if (token->type == STRING_LEX)
     return parseString(jsonFile, token);
   if (token->type == INTEGER_LEX)
-    return parseInteger(jsonFile, token);
+    return parseInteger(jsonFile, token, error);
   if (token->type == DOUBLE_LEX)
     return parseDouble(jsonFile, token);
   if (token->type == BOOLEAN_LEX)
@@ -212,25 +213,51 @@ JsonNode* parseArray(FILE* jsonFile, TokenManager* manager, ParserError* error)
   return node;
 }
 
-JsonNode* parseString(FILE* jsonFile, Token* token)
+char* getStringFromToken(FILE* jsonFile, Token* token)
 {
-  JsonNode* node = createJsonNode(STRING_NODE);
-
   // strLength has some implicit calculations
   // +1 for '\0' and -2 for the double quotes however
   // since startPos starts after the first double quote,
   // we have +1 for '\0' and -1 for the ending double quote which is 0
   size_t strLength = token->endPos - token->startPos;
-  node->value.v_string = (char*)malloc(strLength);
-  fseek(jsonFile, token->startPos + 1, SEEK_SET);
-  fgets(node->value.v_string, strLength, jsonFile);
+  size_t startPos = token->startPos;
 
+  if (token->type != STRING_LEX)
+    strLength++;
+  else
+    startPos++; // skips the first double quotes in a string token
+
+  char* str = (char*)malloc(strLength);
+
+  fseek(jsonFile, startPos, SEEK_SET);
+  fgets(str, strLength, jsonFile);
+
+  return str;
+}
+
+JsonNode* parseString(FILE* jsonFile, Token* token)
+{
+  JsonNode* node = createJsonNode(STRING_NODE);
+  node->value.v_string = getStringFromToken(jsonFile, token);
   return node;
 }
 
-JsonNode* parseInteger(FILE* jsonFile, Token* token)
+JsonNode* parseInteger(FILE* jsonFile, Token* token, ParserError* error)
 {
   JsonNode* node = createJsonNode(INTEGER_NODE);
+
+  char* input = getStringFromToken(jsonFile, token);
+
+  char* endptr;
+  node->value.v_int = (int)strtol(input, &endptr, 10);
+
+  if (*endptr != '\0' && error)
+  {
+    error->type = INVALID_INTEGER_LITERAL;
+    error->token = *token;
+  }
+
+  free(input);
   return node;
 }
 

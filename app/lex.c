@@ -124,6 +124,8 @@ TokenManager* lex(FILE* jsonFile, LexError* error)
       } while ((isdigit(c) || c == '.') && c != EOF);
       ungetc(c, jsonFile);
 
+      token->endPos = ftell(jsonFile);
+
       if (isDouble)
         token->type = DOUBLE_LEX;
       else
@@ -145,6 +147,8 @@ TokenManager* lex(FILE* jsonFile, LexError* error)
         return manager;
       if (!matchFileCharacter(jsonFile, 'e', error, INVALID_BOOLEAN_LITERAL))
         return manager;
+
+      token->endPos = ftell(jsonFile);
       charCount += 3;
     }
     else if (c == 'f')
@@ -159,6 +163,8 @@ TokenManager* lex(FILE* jsonFile, LexError* error)
         return manager;
       if (!matchFileCharacter(jsonFile, 'e', error, INVALID_BOOLEAN_LITERAL))
         return manager;
+
+      token->endPos = ftell(jsonFile);
       charCount += 4;
     }
     else if (c == 'n')
@@ -171,6 +177,8 @@ TokenManager* lex(FILE* jsonFile, LexError* error)
         return manager;
       if (!matchFileCharacter(jsonFile, 'l', error, INVALID_NULL_LITERAL))
         return manager;
+
+      token->endPos = ftell(jsonFile);
       charCount += 3;
     }
     else
