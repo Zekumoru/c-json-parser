@@ -43,7 +43,7 @@ JsonNode* parse(FILE* jsonFile, TokenManager* manager, ParserError* error)
   if (token->type == INTEGER_LEX)
     return parseInteger(jsonFile, token, error);
   if (token->type == DOUBLE_LEX)
-    return parseDouble(jsonFile, token);
+    return parseDouble(jsonFile, token, error);
   if (token->type == BOOLEAN_LEX)
     return parseBoolean(jsonFile, token);
   if (token->type == NULL_LEX)
@@ -117,7 +117,7 @@ JsonNode* parseObject(FILE* jsonFile, TokenManager* manager, ParserError* error)
     // Get object's pair value
     JsonNode* valueNode = parse(jsonFile, manager, error);
     valueNode->key = pairKey;
-    if (valueNode == NULL && error && error->type != NO_PARSER_ERROR)
+    if (valueNode == NULL || (error && error->type != NO_PARSER_ERROR))
       return node;
     addObjectPair(node, valueNode);
     free(valueNode);
@@ -261,9 +261,22 @@ JsonNode* parseInteger(FILE* jsonFile, Token* token, ParserError* error)
   return node;
 }
 
-JsonNode* parseDouble(FILE* jsonFile, Token* token)
+JsonNode* parseDouble(FILE* jsonFile, Token* token, ParserError* error)
 {
   JsonNode* node = createJsonNode(DOUBLE_NODE);
+
+  char* input = getStringFromToken(jsonFile, token);
+
+  char* endptr;
+  node->value.v_double = strtod(input, &endptr);
+
+  if (*endptr != '\0' && error)
+  {
+    error->type = INVALID_DOUBLE_LITERAL;
+    error->token = *token;
+  }
+
+  free(input);
   return node;
 }
 

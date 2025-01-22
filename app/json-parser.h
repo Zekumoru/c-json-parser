@@ -108,6 +108,7 @@ typedef enum ParserErrorType
 {
   NO_PARSER_ERROR = 0,
   INVALID_INTEGER_LITERAL,
+  INVALID_DOUBLE_LITERAL,
   EXPECTED_OBJECT_KEY,
   EXPECTED_END_OF_OBJECT_BRACE,
   EXPECTED_END_OF_ARRAY_BRACE,
@@ -131,7 +132,7 @@ JsonNode* parseObject(FILE* jsonFile, TokenManager* manager, ParserError* error)
 JsonNode* parseArray(FILE* jsonFile, TokenManager* manager, ParserError* error);
 JsonNode* parseString(FILE* jsonFile, Token* token);
 JsonNode* parseInteger(FILE* jsonFile, Token* token, ParserError* error);
-JsonNode* parseDouble(FILE* jsonFile, Token* token);
+JsonNode* parseDouble(FILE* jsonFile, Token* token, ParserError* error);
 JsonNode* parseBoolean(FILE* jsonFile, Token* token);
 JsonNode* parseNull(FILE* jsonFile, Token* token);
 
