@@ -54,6 +54,50 @@ void printTokens(TokenManager* manager)
   }
 }
 
+void traverse(JsonNode* node)
+{
+  if (node == NULL)
+    return;
+
+  switch (node->type)
+  {
+  case NULL_NODE:
+    printf("NodeType: NULL_NODE\n");
+    break;
+  case STRING_NODE:
+    printf("NodeType: STRING_NODE\n");
+    break;
+  case INTEGER_NODE:
+    printf("NodeType: INTEGER_NODE\n");
+    break;
+  case DOUBLE_NODE:
+    printf("NodeType: DOUBLE_NODE\n");
+    break;
+  case BOOLEAN_NODE:
+    printf("NodeType: BOOLEAN_NODE\n");
+    break;
+  case OBJECT_NODE:
+  case ARRAY_NODE:
+    JsonNode* nodeList;
+    if (node->type == OBJECT_NODE)
+    {
+      printf("NodeType: OBJECT_NODE\n");
+      nodeList = node->value.v_object;
+    }
+    else
+    {
+      printf("NodeType: ARRAY_NODE\n");
+      nodeList = node->value.v_array;
+    }
+
+    for (size_t i = 0; i < node->vSize; i++)
+      traverse(&nodeList[i]);
+    break;
+  default:
+    printf("NodeType: UNKNOWN_NODE\n");
+  }
+}
+
 int main()
 {
   FILE* jsonFile = fopen("sample.json", "r");
@@ -64,29 +108,38 @@ int main()
     exit(1);
   }
 
-  LexError error;
-  TokenManager* manager = lex(jsonFile, &error);
+  LexError lexError;
+  TokenManager* manager = lex(jsonFile, &lexError);
 
-  switch (error.type)
+  switch (lexError.type)
   {
   case EXPECTED_END_OF_STRING:
-    printError("Syntax Error", error.lineCount, error.charCount, "Expected end-of-string double quotes");
+    printError("Syntax Error", lexError.lineCount, lexError.charCount, "Expected end-of-string double quotes");
     break;
   case INVALID_BOOLEAN_LITERAL:
-    printError("Syntax Error", error.lineCount, error.charCount, "Invalid Boolean literal");
+    printError("Syntax Error", lexError.lineCount, lexError.charCount, "Invalid Boolean literal");
     break;
   case INVALID_NULL_LITERAL:
-    printError("Syntax Error", error.lineCount, error.charCount, "Invalid Boolean literal");
+    printError("Syntax Error", lexError.lineCount, lexError.charCount, "Invalid Boolean literal");
     break;
   case UNEXPECTED_END_OF_INPUT:
-    printError("Syntax Error", error.lineCount, error.charCount, "Unexpected end-of-input token");
+    printError("Syntax Error", lexError.lineCount, lexError.charCount, "Unexpected end-of-input token");
     break;
   case UNEXPECTED_CHARACTER:
-    printError("Syntax Error", error.lineCount, error.charCount, "Unexpected character");
+    printError("Syntax Error", lexError.lineCount, lexError.charCount, "Unexpected character");
     break;
   }
 
+  printf("LEXICAL ANALYSIS\n");
   printTokens(manager);
+  printf("\n");
+
+  ParserError parserError;
+  parserError.type = NO_PARSER_ERROR;
+  JsonNode* root = parse(manager, &parserError);
+
+  printf("SYNTACTIC ANALYSIS\n");
+  traverse(root);
 
   deleteTokenManager(manager);
   fclose(jsonFile);
