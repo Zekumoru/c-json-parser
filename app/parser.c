@@ -68,7 +68,7 @@ JsonNode* parse(FILE* jsonFile, TokenManager* manager, ParserError* error)
 void addObjectPair(JsonNode* node, JsonNode* pairNode)
 {
   node->vSize++;
-  node->value.v_object = (JsonNode*)valloc(node->value.v_object, &node->vCapacity, node->vSize, sizeof(JsonNode));
+  node->value.v_object = (JsonNode*)vec_alloc(node->value.v_object, &node->vCapacity, node->vSize, sizeof(JsonNode));
   node->value.v_object[node->vSize - 1] = *pairNode;
 }
 
@@ -163,7 +163,7 @@ JsonNode* parseObject(FILE* jsonFile, TokenManager* manager, ParserError* error)
 void addElement(JsonNode* node, JsonNode* elemNode)
 {
   node->vSize++;
-  node->value.v_array = (JsonNode*)valloc(node->value.v_array, &node->vCapacity, node->vSize, sizeof(JsonNode));
+  node->value.v_array = (JsonNode*)vec_alloc(node->value.v_array, &node->vCapacity, node->vSize, sizeof(JsonNode));
   node->value.v_array[node->vSize - 1] = *elemNode;
 }
 

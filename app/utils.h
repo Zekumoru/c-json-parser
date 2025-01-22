@@ -3,6 +3,6 @@
 
 #include <stddef.h>
 
-void* valloc(void* vec, size_t* cap, const size_t size, const size_t elemSize);
+void* vec_alloc(void* vec, size_t* cap, const size_t size, const size_t elemSize);
 
 #endif // UTILS_H

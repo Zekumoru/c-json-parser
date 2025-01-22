@@ -23,7 +23,7 @@ void deleteTokenManager(TokenManager* manager)
 Token* createToken(TokenManager* manager)
 {
   manager->size++;
-  manager->tokens = (Token*)valloc(manager->tokens, &manager->capacity, manager->size, sizeof(Token));
+  manager->tokens = (Token*)vec_alloc(manager->tokens, &manager->capacity, manager->size, sizeof(Token));
   return &manager->tokens[manager->size - 1];
 }
 
