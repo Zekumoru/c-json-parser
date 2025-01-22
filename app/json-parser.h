@@ -1,6 +1,7 @@
 #ifndef JSON_PARSER_C
 #define JSON_PARSER_C
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
 
