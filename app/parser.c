@@ -212,25 +212,30 @@ JsonNode* parseArray(TokenManager* manager, ParserError* error)
 
 JsonNode* parseString(Token* token)
 {
-  return NULL;
+  JsonNode* node = createJsonNode(STRING_NODE);
+  return node;
 }
 
 JsonNode* parseInteger(Token* token)
 {
-  return NULL;
+  JsonNode* node = createJsonNode(INTEGER_NODE);
+  return node;
 }
 
 JsonNode* parseDouble(Token* token)
 {
-  return NULL;
+  JsonNode* node = createJsonNode(DOUBLE_NODE);
+  return node;
 }
 
 JsonNode* parseBoolean(Token* token)
 {
-  return NULL;
+  JsonNode* node = createJsonNode(BOOLEAN_NODE);
+  return node;
 }
 
 JsonNode* parseNull(Token* token)
 {
-  return NULL;
+  JsonNode* node = createJsonNode(NULL_NODE);
+  return node;
 }
