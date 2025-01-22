@@ -1,8 +1,17 @@
 {
-  "foo": true,
-  "nested": {
-    "coz": null,
-    "bar": 3.14,
-    "baz": "Hello!"
-  }
+  "string": "Hello, world!",
+  "number": 12345,
+  "float": 3.14159,
+  "boolean_true": true,
+  "boolean_false": false,
+  "null_value": null,
+  "array": ["apple", "banana", 42, false, null],
+  "nested_object": {
+    "id": 1,
+    "name": "Sample",
+    "price": 99.99,
+    "available": true
+  },
+  "empty_array": [],
+  "empty_object": {}
 }
