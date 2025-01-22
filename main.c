@@ -94,6 +94,8 @@ void traverse(JsonNode* node, size_t indent)
     break;
   case BOOLEAN_NODE:
     printWithIndent(indent, "BOOLEAN_NODE\n");
+    printWithIndent(indent, "- Key: %s\n", node->key);
+    printWithIndent(indent, "- Value: %s\n", node->value.v_bool ? "true" : "false");
     break;
   case OBJECT_NODE:
   case ARRAY_NODE:

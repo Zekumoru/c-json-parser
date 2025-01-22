@@ -283,6 +283,12 @@ JsonNode* parseDouble(FILE* jsonFile, Token* token, ParserError* error)
 JsonNode* parseBoolean(FILE* jsonFile, Token* token)
 {
   JsonNode* node = createJsonNode(BOOLEAN_NODE);
+
+  fseek(jsonFile, token->startPos, SEEK_SET);
+  int c = fgetc(jsonFile);
+
+  node->value.v_bool = (c == 't');
+
   return node;
 }
 

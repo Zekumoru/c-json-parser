@@ -1,5 +1,5 @@
 {
-  "foo": 5,
+  "foo": true,
   "nested": {
     "bar": 3.14,
     "baz": "Hello!"
