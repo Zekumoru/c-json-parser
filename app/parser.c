@@ -24,7 +24,7 @@ Token* advance(TokenManager* manager)
   return token;
 }
 
-JsonNode* parse(TokenManager* manager, ParserError* error)
+JsonNode* parse(FILE* jsonFile, TokenManager* manager, ParserError* error)
 {
   if (error && error->type != NO_PARSER_ERROR)
     return NULL;
@@ -34,19 +34,19 @@ JsonNode* parse(TokenManager* manager, ParserError* error)
     return NULL;
 
   if (token->type == CURLY_OPEN)
-    return parseObject(manager, error);
+    return parseObject(jsonFile, manager, error);
   if (token->type == BRACKET_OPEN)
-    return parseArray(manager, error);
+    return parseArray(jsonFile, manager, error);
   if (token->type == STRING_LEX)
-    return parseString(token);
+    return parseString(jsonFile, token);
   if (token->type == INTEGER_LEX)
-    return parseInteger(token);
+    return parseInteger(jsonFile, token);
   if (token->type == DOUBLE_LEX)
-    return parseDouble(token);
+    return parseDouble(jsonFile, token);
   if (token->type == BOOLEAN_LEX)
-    return parseBoolean(token);
+    return parseBoolean(jsonFile, token);
   if (token->type == NULL_LEX)
-    return parseNull(token);
+    return parseNull(jsonFile, token);
 
   if (error)
   {
@@ -63,7 +63,7 @@ void addObjectPair(JsonNode* node, JsonNode* pairNode)
   node->value.v_object[node->vSize - 1] = *pairNode;
 }
 
-JsonNode* parseObject(TokenManager* manager, ParserError* error)
+JsonNode* parseObject(FILE* jsonFile, TokenManager* manager, ParserError* error)
 {
   JsonNode* node = createJsonNode(OBJECT_NODE);
 
@@ -96,7 +96,7 @@ JsonNode* parseObject(TokenManager* manager, ParserError* error)
       return node;
     }
 
-    JsonNode* strNode = parseString(token);
+    JsonNode* strNode = parseString(jsonFile, token);
     node->key = strNode->value.v_string;
     free(strNode);
 
@@ -113,7 +113,7 @@ JsonNode* parseObject(TokenManager* manager, ParserError* error)
     }
 
     // Get value
-    JsonNode* valueNode = parse(manager, error);
+    JsonNode* valueNode = parse(jsonFile, manager, error);
     if (valueNode == NULL && error && error->type != NO_PARSER_ERROR)
       return node;
     addObjectPair(node, valueNode);
@@ -156,7 +156,7 @@ void addElement(JsonNode* node, JsonNode* elemNode)
   node->value.v_array[node->vSize - 1] = *elemNode;
 }
 
-JsonNode* parseArray(TokenManager* manager, ParserError* error)
+JsonNode* parseArray(FILE* jsonFile, TokenManager* manager, ParserError* error)
 {
   JsonNode* node = createJsonNode(ARRAY_NODE);
 
@@ -174,7 +174,7 @@ JsonNode* parseArray(TokenManager* manager, ParserError* error)
 
   while (true)
   {
-    JsonNode* elemNode = parse(manager, error);
+    JsonNode* elemNode = parse(jsonFile, manager, error);
     if (elemNode == NULL && error && error->type != NO_PARSER_ERROR)
       return node;
     addElement(node, elemNode);
@@ -210,31 +210,31 @@ JsonNode* parseArray(TokenManager* manager, ParserError* error)
   return node;
 }
 
-JsonNode* parseString(Token* token)
+JsonNode* parseString(FILE* jsonFile, Token* token)
 {
   JsonNode* node = createJsonNode(STRING_NODE);
   return node;
 }
 
-JsonNode* parseInteger(Token* token)
+JsonNode* parseInteger(FILE* jsonFile, Token* token)
 {
   JsonNode* node = createJsonNode(INTEGER_NODE);
   return node;
 }
 
-JsonNode* parseDouble(Token* token)
+JsonNode* parseDouble(FILE* jsonFile, Token* token)
 {
   JsonNode* node = createJsonNode(DOUBLE_NODE);
   return node;
 }
 
-JsonNode* parseBoolean(Token* token)
+JsonNode* parseBoolean(FILE* jsonFile, Token* token)
 {
   JsonNode* node = createJsonNode(BOOLEAN_NODE);
   return node;
 }
 
-JsonNode* parseNull(Token* token)
+JsonNode* parseNull(FILE* jsonFile, Token* token)
 {
   JsonNode* node = createJsonNode(NULL_NODE);
   return node;

@@ -136,7 +136,7 @@ int main()
 
   ParserError parserError;
   parserError.type = NO_PARSER_ERROR;
-  JsonNode* root = parse(manager, &parserError);
+  JsonNode* root = parse(jsonFile, manager, &parserError);
 
   switch (parserError.type)
   {

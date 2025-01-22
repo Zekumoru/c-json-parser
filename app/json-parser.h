@@ -126,14 +126,14 @@ Token* advance(TokenManager* manager);
 void addObjectPair(JsonNode* node, JsonNode* pairNode);
 void addElement(JsonNode* node, JsonNode* elemNode);
 
-JsonNode* parseObject(TokenManager* manager, ParserError* error);
-JsonNode* parseArray(TokenManager* manager, ParserError* error);
-JsonNode* parseString(Token* token);
-JsonNode* parseInteger(Token* token);
-JsonNode* parseDouble(Token* token);
-JsonNode* parseBoolean(Token* token);
-JsonNode* parseNull(Token* token);
+JsonNode* parseObject(FILE* jsonFile, TokenManager* manager, ParserError* error);
+JsonNode* parseArray(FILE* jsonFile, TokenManager* manager, ParserError* error);
+JsonNode* parseString(FILE* jsonFile, Token* token);
+JsonNode* parseInteger(FILE* jsonFile, Token* token);
+JsonNode* parseDouble(FILE* jsonFile, Token* token);
+JsonNode* parseBoolean(FILE* jsonFile, Token* token);
+JsonNode* parseNull(FILE* jsonFile, Token* token);
 
-JsonNode* parse(TokenManager* manager, ParserError* error);
+JsonNode* parse(FILE* jsonFile, TokenManager* manager, ParserError* error);
 
 #endif // JSON_PARSER_C
