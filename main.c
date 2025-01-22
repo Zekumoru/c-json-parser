@@ -4,9 +4,105 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+void printError(const char* errorType, size_t lineCount, size_t charCount, const char* message);
+void printLexError(LexError* error);
+void printParseError(ParserError* error);
+void printTokens(TokenManager* manager);
+void printWithIndent(size_t indent, const char* fmt, ...);
+
+void traverse(JsonNode* node, size_t indent, bool isArrayNode);
+
+int main()
+{
+  FILE* jsonFile = fopen("sample.json", "r");
+
+  if (!jsonFile)
+  {
+    perror("Could not open json file.");
+    exit(1);
+  }
+
+  LexError lexError;
+  TokenManager* manager = lex(jsonFile, &lexError);
+
+  printLexError(&lexError);
+
+  printf("LEXICAL ANALYSIS\n");
+  printTokens(manager);
+  printf("\n");
+
+  ParserError parserError;
+  parserError.type = NO_PARSER_ERROR;
+  JsonNode* root = parse(jsonFile, manager, &parserError);
+
+  printParseError(&parserError);
+
+  printf("SYNTACTIC ANALYSIS\n");
+  traverse(root, 0, false);
+
+  freeJsonTree(root);
+  deleteTokenManager(manager);
+  fclose(jsonFile);
+
+  return 0;
+}
+
 void printError(const char* errorType, size_t lineCount, size_t charCount, const char* message)
 {
   printf("Error: %s at line %ld, column %ld: %s\n", errorType, lineCount, charCount, message);
+}
+
+void printLexError(LexError* error)
+{
+  switch (error->type)
+  {
+  case EXPECTED_END_OF_STRING:
+    printError("Syntax Error", error->lineCount, error->charCount, "Expected end-of-string double quotes");
+    break;
+  case INVALID_BOOLEAN_LITERAL:
+    printError("Syntax Error", error->lineCount, error->charCount, "Invalid Boolean literal");
+    break;
+  case INVALID_NULL_LITERAL:
+    printError("Syntax Error", error->lineCount, error->charCount, "Invalid Boolean literal");
+    break;
+  case UNEXPECTED_END_OF_INPUT:
+    printError("Syntax Error", error->lineCount, error->charCount, "Unexpected end-of-input token");
+    break;
+  case UNEXPECTED_CHARACTER:
+    printError("Syntax Error", error->lineCount, error->charCount, "Unexpected character");
+    break;
+  }
+}
+
+void printParseError(ParserError* error)
+{
+  switch (error->type)
+  {
+  case INVALID_INTEGER_LITERAL:
+    printError("Syntax Error", error->token.lineCount, error->token.charCount, "Invalid integer literal");
+    break;
+  case INVALID_DOUBLE_LITERAL:
+    printError("Syntax Error", error->token.lineCount, error->token.charCount, "Invalid double literal");
+    break;
+  case EXPECTED_OBJECT_KEY:
+    printError("Syntax Error", error->token.lineCount, error->token.charCount, "Expected object key");
+    break;
+  case EXPECTED_END_OF_OBJECT_BRACE:
+    printError("Syntax Error", error->token.lineCount, error->token.charCount, "Expected end-of-object brace");
+    break;
+  case EXPECTED_END_OF_ARRAY_BRACE:
+    printError("Syntax Error", error->token.lineCount, error->token.charCount, "Expected end-of-array brace");
+    break;
+  case EXPECTED_COLON:
+    printError("Syntax Error", error->token.lineCount, error->token.charCount, "Expected colon after object key");
+    break;
+  case EXPECTED_COMMA:
+    printError("Syntax Error", error->token.lineCount, error->token.charCount, "Expected comma");
+    break;
+  case UNEXPECTED_TOKEN:
+    printError("Syntax Error", error->token.lineCount, error->token.charCount, "Unexpected token");
+    break;
+  }
 }
 
 void printTokens(TokenManager* manager)
@@ -76,133 +172,68 @@ void traverse(JsonNode* node, size_t indent, bool isArrayNode)
   switch (node->type)
   {
   case NULL_NODE:
-    printWithIndent(indent, "NULL_NODE\n");
+    printWithIndent(indent, "- ");
     if (!isArrayNode)
-      printWithIndent(indent, "- Key: %s\n", node->key);
-    printWithIndent(indent, "- Value: (null)\n");
+      printf("%s: ", node->key);
+    printf("(null)\n");
     break;
   case STRING_NODE:
-    printWithIndent(indent, "STRING_NODE\n");
+    printWithIndent(indent, "- ");
     if (!isArrayNode)
-      printWithIndent(indent, "- Key: %s\n", node->key);
-    printWithIndent(indent, "- Value: %s\n", node->value.v_string);
+      printf("%s: ", node->key);
+    printf("%s\n", node->value.v_string);
     break;
   case INTEGER_NODE:
-    printWithIndent(indent, "INTEGER_NODE\n");
+    printWithIndent(indent, "- ");
     if (!isArrayNode)
-      printWithIndent(indent, "- Key: %s\n", node->key);
-    printWithIndent(indent, "- Value: %d\n", node->value.v_int);
+      printf("%s: ", node->key);
+    printf("%d\n", node->value.v_int);
     break;
   case DOUBLE_NODE:
-    printWithIndent(indent, "DOUBLE_NODE\n");
+    printWithIndent(indent, "- ");
     if (!isArrayNode)
-      printWithIndent(indent, "- Key: %s\n", node->key);
-    printWithIndent(indent, "- Value: %lf\n", node->value.v_double);
+      printf("%s: ", node->key);
+    printf("%lf\n", node->value.v_double);
     break;
   case BOOLEAN_NODE:
-    printWithIndent(indent, "BOOLEAN_NODE\n");
+    printWithIndent(indent, "- ");
     if (!isArrayNode)
-      printWithIndent(indent, "- Key: %s\n", node->key);
-    printWithIndent(indent, "- Value: %s\n", node->value.v_bool ? "true" : "false");
+      printf("%s: ", node->key);
+    printf("%s\n", node->value.v_bool ? "true" : "false");
     break;
   case OBJECT_NODE:
   case ARRAY_NODE:
+  {
     JsonNode* nodeList;
+    bool hasNoKey = false;
+
     if (node->type == OBJECT_NODE)
     {
-      printWithIndent(indent, "%s\n", node->key == NULL ? "ROOT_OBJECT_NODE" : "OBJECT_NODE");
-      if (node->key != NULL)
-        printWithIndent(indent, "- Key: %s\n", node->key);
+      hasNoKey = node->key == NULL;
+      if (!hasNoKey)
+        printWithIndent(indent, "- %s:", node->key);
       nodeList = node->value.v_object;
+
+      if (node->vSize == 0)
+        printf(" {}");
+      if (!hasNoKey)
+        printf("\n");
     }
     else
     {
-      printWithIndent(indent, "ARRAY_NODE\n");
+      printWithIndent(indent, "- %s:", node->key);
       nodeList = node->value.v_array;
+
+      if (node->vSize == 0)
+        printf(" []");
+      printf("\n");
     }
 
     for (size_t i = 0; i < node->vSize; i++)
-      traverse(&nodeList[i], indent + 2, node->type == ARRAY_NODE);
+      traverse(&nodeList[i], indent + (hasNoKey ? 0 : 2), node->type == ARRAY_NODE);
     break;
+  }
   default:
-    printWithIndent(indent, "UNKNOWN_NODE\n");
+    printWithIndent(indent, "- [[UNKNOWN NODE]]\n");
   }
-}
-
-int main()
-{
-  FILE* jsonFile = fopen("sample.json", "r");
-
-  if (!jsonFile)
-  {
-    perror("Could not open json file.");
-    exit(1);
-  }
-
-  LexError lexError;
-  TokenManager* manager = lex(jsonFile, &lexError);
-
-  switch (lexError.type)
-  {
-  case EXPECTED_END_OF_STRING:
-    printError("Syntax Error", lexError.lineCount, lexError.charCount, "Expected end-of-string double quotes");
-    break;
-  case INVALID_BOOLEAN_LITERAL:
-    printError("Syntax Error", lexError.lineCount, lexError.charCount, "Invalid Boolean literal");
-    break;
-  case INVALID_NULL_LITERAL:
-    printError("Syntax Error", lexError.lineCount, lexError.charCount, "Invalid Boolean literal");
-    break;
-  case UNEXPECTED_END_OF_INPUT:
-    printError("Syntax Error", lexError.lineCount, lexError.charCount, "Unexpected end-of-input token");
-    break;
-  case UNEXPECTED_CHARACTER:
-    printError("Syntax Error", lexError.lineCount, lexError.charCount, "Unexpected character");
-    break;
-  }
-
-  printf("LEXICAL ANALYSIS\n");
-  printTokens(manager);
-  printf("\n");
-
-  ParserError parserError;
-  parserError.type = NO_PARSER_ERROR;
-  JsonNode* root = parse(jsonFile, manager, &parserError);
-
-  switch (parserError.type)
-  {
-  case INVALID_INTEGER_LITERAL:
-    printError("Syntax Error", parserError.token.lineCount, parserError.token.charCount, "Invalid integer literal");
-    break;
-  case INVALID_DOUBLE_LITERAL:
-    printError("Syntax Error", parserError.token.lineCount, parserError.token.charCount, "Invalid double literal");
-    break;
-  case EXPECTED_OBJECT_KEY:
-    printError("Syntax Error", parserError.token.lineCount, parserError.token.charCount, "Expected object key");
-    break;
-  case EXPECTED_END_OF_OBJECT_BRACE:
-    printError("Syntax Error", parserError.token.lineCount, parserError.token.charCount, "Expected end-of-object brace");
-    break;
-  case EXPECTED_END_OF_ARRAY_BRACE:
-    printError("Syntax Error", parserError.token.lineCount, parserError.token.charCount, "Expected end-of-array brace");
-    break;
-  case EXPECTED_COLON:
-    printError("Syntax Error", parserError.token.lineCount, parserError.token.charCount, "Expected colon after object key");
-    break;
-  case EXPECTED_COMMA:
-    printError("Syntax Error", parserError.token.lineCount, parserError.token.charCount, "Expected comma");
-    break;
-  case UNEXPECTED_TOKEN:
-    printError("Syntax Error", parserError.token.lineCount, parserError.token.charCount, "Unexpected token");
-    break;
-  }
-
-  printf("SYNTACTIC ANALYSIS\n");
-  traverse(root, 0, false);
-
-  freeJsonTree(root);
-  deleteTokenManager(manager);
-  fclose(jsonFile);
-
-  return 0;
 }
