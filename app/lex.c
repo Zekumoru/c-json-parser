@@ -74,6 +74,8 @@ TokenManager* lex(FILE* jsonFile, LexError* error)
 
     Token* token = createToken(manager);
     token->startPos = ftell(jsonFile) - 1;
+    token->lineCount = lineCount + 1;
+    token->charCount = charCount;
 
     error->lineCount = lineCount + 1;
     error->charCount = charCount;

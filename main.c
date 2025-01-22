@@ -138,6 +138,28 @@ int main()
   parserError.type = NO_PARSER_ERROR;
   JsonNode* root = parse(manager, &parserError);
 
+  switch (parserError.type)
+  {
+  case EXPECTED_OBJECT_KEY:
+    printError("Syntax Error", parserError.token.lineCount, parserError.token.charCount, "Expected object key");
+    break;
+  case EXPECTED_END_OF_OBJECT_BRACE:
+    printError("Syntax Error", parserError.token.lineCount, parserError.token.charCount, "Expected end-of-object brace");
+    break;
+  case EXPECTED_END_OF_ARRAY_BRACE:
+    printError("Syntax Error", parserError.token.lineCount, parserError.token.charCount, "Expected end-of-array brace");
+    break;
+  case EXPECTED_COLON:
+    printError("Syntax Error", parserError.token.lineCount, parserError.token.charCount, "Expected colon after object key");
+    break;
+  case EXPECTED_COMMA:
+    printError("Syntax Error", parserError.token.lineCount, parserError.token.charCount, "Expected comma");
+    break;
+  case UNEXPECTED_TOKEN:
+    printError("Syntax Error", parserError.token.lineCount, parserError.token.charCount, "Unexpected token");
+    break;
+  }
+
   printf("SYNTACTIC ANALYSIS\n");
   traverse(root);
 

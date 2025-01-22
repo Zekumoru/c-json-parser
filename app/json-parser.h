@@ -28,6 +28,9 @@ typedef struct Token
   TokenType type;
   size_t startPos;
   size_t endPos;
+  // For parser error
+  size_t lineCount;
+  size_t charCount;
 } Token;
 
 typedef struct TokenManager
