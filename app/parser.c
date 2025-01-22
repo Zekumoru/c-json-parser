@@ -30,6 +30,8 @@ JsonNode* parse(TokenManager* manager, ParserError* error)
     return NULL;
 
   Token* token = advance(manager);
+  if (token == NULL)
+    return NULL;
 
   if (token->type == CURLY_OPEN)
     return parseObject(manager, error);
@@ -66,6 +68,12 @@ JsonNode* parseObject(TokenManager* manager, ParserError* error)
   JsonNode* node = createJsonNode(OBJECT_NODE);
 
   Token* token = advance(manager);
+  if (token == NULL)
+  {
+    if (error)
+      error->type = EXPECTED_END_OF_OBJECT_BRACE;
+    return node;
+  }
 
   // Handle empty object {}
   if (token->type == CURLY_CLOSE)
@@ -76,12 +84,13 @@ JsonNode* parseObject(TokenManager* manager, ParserError* error)
     token = advance(manager);
 
     // Get key
-    if (token->type != STRING_LEX)
+    if (token == NULL || token->type != STRING_LEX)
     {
       if (error)
       {
         error->type = EXPECTED_OBJECT_KEY;
-        error->token = *token;
+        if (token != NULL)
+          error->token = *token;
       }
       return node;
     }
@@ -91,12 +100,13 @@ JsonNode* parseObject(TokenManager* manager, ParserError* error)
     free(strNode);
 
     token = advance(manager);
-    if (token->type != COLON)
+    if (token == NULL || token->type != COLON)
     {
       if (error)
       {
         error->type = EXPECTED_COLON;
-        error->token = *token;
+        if (token != NULL)
+          error->token = *token;
       }
       return node;
     }
@@ -107,6 +117,13 @@ JsonNode* parseObject(TokenManager* manager, ParserError* error)
     free(valueNode);
 
     token = advance(manager);
+    if (token == NULL)
+    {
+      if (error)
+        error->type = EXPECTED_END_OF_OBJECT_BRACE;
+      return node;
+    }
+
     if (token->type == CURLY_CLOSE)
       return node;
 
