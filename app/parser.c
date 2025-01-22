@@ -52,8 +52,8 @@ JsonNode* parse(TokenManager* manager, ParserError* error)
   {
     error->type = UNEXPECTED_TOKEN;
     error->token = *token; // duplicate token in stack
-    return NULL;
   }
+  return NULL;
 }
 
 void addObjectPair(JsonNode* node, JsonNode* pairNode)
