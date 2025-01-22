@@ -1,6 +1,7 @@
 {
   "foo": true,
   "nested": {
+    "coz": null,
     "bar": 3.14,
     "baz": "Hello!"
   }

@@ -76,6 +76,8 @@ void traverse(JsonNode* node, size_t indent)
   {
   case NULL_NODE:
     printWithIndent(indent, "NULL_NODE\n");
+    printWithIndent(indent, "- Key: %s\n", node->key);
+    printWithIndent(indent, "- Value: (null)\n");
     break;
   case STRING_NODE:
     printWithIndent(indent, "STRING_NODE\n");
