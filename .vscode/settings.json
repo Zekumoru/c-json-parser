@@ -2,6 +2,7 @@
   "cmake.configureOnOpen": false,
   "editor.formatOnSave": true,
   "files.associations": {
+    "*.ipp": "cpp",
     "*.tcc": "cpp",
     "compare": "cpp",
     "concepts": "cpp",
@@ -53,6 +54,7 @@
     "ctime": "cpp",
     "iomanip": "cpp",
     "sstream": "cpp",
-    "*.tpp": "cpp"
+    "*.tpp": "cpp",
+    "stdbool.h": "c"
   }
 }

@@ -1,4 +1,6 @@
 #include "json-parser.h"
+#include "utils.h"
+#include <stdbool.h>
 #include <stdlib.h>
 
 JsonNode* createJsonNode(JsonNodeType type)
@@ -30,7 +32,7 @@ JsonNode* parse(TokenManager* manager, ParserError* error)
   Token* token = advance(manager);
 
   if (token->type == CURLY_OPEN)
-    return parseObject(manager);
+    return parseObject(manager, error);
   if (token->type == BRACKET_OPEN)
     return parseArray(manager);
   if (token->type == STRING_LEX)
@@ -52,9 +54,79 @@ JsonNode* parse(TokenManager* manager, ParserError* error)
   }
 }
 
-JsonNode* parseObject(TokenManager* manager)
+void addObjectPair(JsonNode* node, JsonNode* pairNode)
 {
-  return NULL;
+  node->vSize++;
+  node->value.v_object = (JsonNode*)valloc(node->value.v_object, &node->vCapacity, node->vSize, sizeof(JsonNode));
+  node->value.v_object[node->vSize - 1] = *pairNode;
+}
+
+JsonNode* parseObject(TokenManager* manager, ParserError* error)
+{
+  JsonNode* node = createJsonNode(OBJECT_NODE);
+
+  Token* token = advance(manager);
+
+  // Handle empty object {}
+  if (token->type == CURLY_CLOSE)
+    return node;
+
+  while (true)
+  {
+    token = advance(manager);
+
+    // Get key
+    if (token->type != STRING_LEX)
+    {
+      if (error)
+      {
+        error->type = EXPECTED_OBJECT_KEY;
+        error->token = *token;
+      }
+      return node;
+    }
+
+    JsonNode* strNode = parseString(token);
+    node->key = strNode->value.v_string;
+    free(strNode);
+
+    token = advance(manager);
+    if (token->type != COLON)
+    {
+      if (error)
+      {
+        error->type = EXPECTED_COLON;
+        error->token = *token;
+      }
+      return node;
+    }
+
+    // Get value
+    JsonNode* valueNode = parse(manager, error);
+    addObjectPair(node, valueNode);
+    free(valueNode);
+
+    token = advance(manager);
+    if (token->type == CURLY_CLOSE)
+      return node;
+
+    if (token->type != COMMA)
+    {
+      if (error)
+      {
+        error->type = EXPECTED_COMMA;
+        error->token = *token;
+      }
+      return node;
+    }
+  }
+
+  if (error)
+  {
+    error->type = EXPECTED_END_OF_OBJECT_BRACE;
+    error->token = *token;
+  }
+  return node;
 }
 
 JsonNode* parseArray(TokenManager* manager)
