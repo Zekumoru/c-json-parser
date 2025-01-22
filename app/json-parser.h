@@ -67,7 +67,7 @@ TokenManager* lex(FILE* jsonFile, LexError* error);
  * SYNTACTIC ANALYSIS
  */
 
-typedef enum NodeType
+typedef enum JsonNodeType
 {
   NULL_NODE = 0,
   OBJECT_NODE,
@@ -76,24 +76,26 @@ typedef enum NodeType
   INTEGER_NODE,
   DOUBLE_NODE,
   BOOLEAN_NODE
-} NodeType;
+} JsonNodeType;
 
-typedef union JSONValue
+typedef union JsonValue
 {
-  struct JSONNode* v_object;
-  struct JSONNode* v_array;
+  struct JsonNode* v_object;
+  struct JsonNode* v_array;
   char* v_string;
   int v_int;
   double v_double;
   bool v_bool;
-} JSONValue;
+} JsonValue;
 
-typedef struct JSONNode
+typedef struct JsonNode
 {
-  NodeType type;
+  JsonNodeType type;
   char* key;
-  JSONValue value;
-} JSONNode;
+  JsonValue value;
+} JsonNode;
+
+JsonNode* createJsonNode();
 
 typedef enum ParserErrorType
 {
@@ -109,14 +111,14 @@ typedef struct ParserError
 
 Token* advance(TokenManager* manager);
 
-JSONNode* parseObject(TokenManager* manager);
-JSONNode* parseArray(TokenManager* manager);
-JSONNode* parseString(Token* token);
-JSONNode* parseInteger(Token* token);
-JSONNode* parseDouble(Token* token);
-JSONNode* parseBoolean(Token* token);
-JSONNode* parseNull(Token* token);
+JsonNode* parseObject(TokenManager* manager);
+JsonNode* parseArray(TokenManager* manager);
+JsonNode* parseString(Token* token);
+JsonNode* parseInteger(Token* token);
+JsonNode* parseDouble(Token* token);
+JsonNode* parseBoolean(Token* token);
+JsonNode* parseNull(Token* token);
 
-JSONNode* parse(TokenManager* manager, ParserError* error);
+JsonNode* parse(TokenManager* manager, ParserError* error);
 
 #endif // JSON_PARSER_C

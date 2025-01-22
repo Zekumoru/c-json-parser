@@ -1,4 +1,14 @@
 #include "json-parser.h"
+#include <stdlib.h>
+
+JsonNode* createJsonNode(JsonNodeType type)
+{
+  JsonNode* node = (JsonNode*)malloc(sizeof(JsonNode));
+  node->type = type;
+  node->key = NULL;
+  node->value.v_object = NULL;
+  return node;
+}
 
 Token* advance(TokenManager* manager)
 {
@@ -10,7 +20,7 @@ Token* advance(TokenManager* manager)
   return token;
 }
 
-JSONNode* parse(TokenManager* manager, ParserError* error)
+JsonNode* parse(TokenManager* manager, ParserError* error)
 {
   if (error && error->type != NO_PARSER_ERROR)
     return NULL;
@@ -40,37 +50,37 @@ JSONNode* parse(TokenManager* manager, ParserError* error)
   }
 }
 
-JSONNode* parseObject(TokenManager* manager)
+JsonNode* parseObject(TokenManager* manager)
 {
   return NULL;
 }
 
-JSONNode* parseArray(TokenManager* manager)
+JsonNode* parseArray(TokenManager* manager)
 {
   return NULL;
 }
 
-JSONNode* parseString(Token* token)
+JsonNode* parseString(Token* token)
 {
   return NULL;
 }
 
-JSONNode* parseInteger(Token* token)
+JsonNode* parseInteger(Token* token)
 {
   return NULL;
 }
 
-JSONNode* parseDouble(Token* token)
+JsonNode* parseDouble(Token* token)
 {
   return NULL;
 }
 
-JSONNode* parseBoolean(Token* token)
+JsonNode* parseBoolean(Token* token)
 {
   return NULL;
 }
 
-JSONNode* parseNull(Token* token)
+JsonNode* parseNull(Token* token)
 {
   return NULL;
 }
