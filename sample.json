@@ -5,7 +5,14 @@
   "boolean_true": true,
   "boolean_false": false,
   "null_value": null,
-  "array": ["apple", "banana", 42, false, null],
+  "array": [
+    "apple",
+    "banana",
+    42,
+    false,
+    null,
+    { "array_nested_object": { "id": 890, "name": "Test" } }
+  ],
   "nested_object": {
     "id": 1,
     "name": "Sample",
