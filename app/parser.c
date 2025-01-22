@@ -298,3 +298,47 @@ JsonNode* parseNull(FILE* jsonFile, Token* token)
   JsonNode* node = createJsonNode(NULL_NODE);
   return node;
 }
+
+void freeJsonTree(JsonNode* node)
+{
+  if (node == NULL)
+    return;
+
+  if (node->key != NULL)
+    free(node->key);
+
+  switch (node->type)
+  {
+  case NULL_NODE:
+  case INTEGER_NODE:
+  case DOUBLE_NODE:
+  case BOOLEAN_NODE:
+    break; // freed below
+  case STRING_NODE:
+    free(node->value.v_string);
+    break;
+  case OBJECT_NODE:
+  case ARRAY_NODE:
+    JsonNode* nodeList;
+    if (node->type == OBJECT_NODE)
+    {
+      nodeList = node->value.v_object;
+    }
+    else
+    {
+      nodeList = node->value.v_array;
+    }
+
+    for (size_t i = 0; i < node->vSize; i++)
+      freeJsonTree(&nodeList[i]);
+
+    free(nodeList);
+    break;
+  }
+
+  // Free root node which is an OBJECT node with no key
+  // As for the other nodes, they're freed together above
+  // inside the free(nodeList)
+  if (node->type == OBJECT_NODE && node->key == NULL)
+    free(node);
+}

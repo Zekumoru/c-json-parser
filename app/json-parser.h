@@ -138,4 +138,6 @@ JsonNode* parseNull(FILE* jsonFile, Token* token);
 
 JsonNode* parse(FILE* jsonFile, TokenManager* manager, ParserError* error);
 
+void freeJsonTree(JsonNode* node);
+
 #endif // JSON_PARSER_C

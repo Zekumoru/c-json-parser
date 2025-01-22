@@ -200,8 +200,7 @@ int main()
   printf("SYNTACTIC ANALYSIS\n");
   traverse(root, 0, false);
 
-  // DON'T FORGET TO FREE THE PARSED JSON TREE
-
+  freeJsonTree(root);
   deleteTokenManager(manager);
   fclose(jsonFile);
 
