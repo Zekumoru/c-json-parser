@@ -7,6 +7,8 @@ JsonNode* createJsonNode(JsonNodeType type)
   node->type = type;
   node->key = NULL;
   node->value.v_object = NULL;
+  node->vCapacity = 0;
+  node->vSize = 0;
   return node;
 }
 

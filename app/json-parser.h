@@ -93,6 +93,10 @@ typedef struct JsonNode
   JsonNodeType type;
   char* key;
   JsonValue value;
+  // If the value happens to be an array or object then it
+  // needs these dynamic allocation variables
+  size_t vCapacity;
+  size_t vSize;
 } JsonNode;
 
 JsonNode* createJsonNode();
