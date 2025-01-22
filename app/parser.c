@@ -79,6 +79,7 @@ JsonNode* parseObject(TokenManager* manager, ParserError* error)
   if (token->type == CURLY_CLOSE)
     return node;
 
+  manager->pos--;
   while (true)
   {
     token = advance(manager);
