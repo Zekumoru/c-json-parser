@@ -66,6 +66,8 @@ void traverse(JsonNode* node)
     break;
   case STRING_NODE:
     printf("NodeType: STRING_NODE\n");
+    printf("     Key: %s\n", node->key);
+    printf("   Value: %s\n", node->value.v_string);
     break;
   case INTEGER_NODE:
     printf("NodeType: INTEGER_NODE\n");
@@ -81,7 +83,9 @@ void traverse(JsonNode* node)
     JsonNode* nodeList;
     if (node->type == OBJECT_NODE)
     {
-      printf("NodeType: OBJECT_NODE\n");
+      printf("NodeType: %s\n", node->key == NULL ? "ROOT_OBJECT_NODE" : "OBJECT_NODE");
+      if (node->key)
+        printf("     Key: %s\n", node->key);
       nodeList = node->value.v_object;
     }
     else
@@ -162,6 +166,8 @@ int main()
 
   printf("SYNTACTIC ANALYSIS\n");
   traverse(root);
+
+  // DON'T FORGET TO FREE THE PARSED JSON TREE
 
   deleteTokenManager(manager);
   fclose(jsonFile);

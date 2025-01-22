@@ -84,7 +84,7 @@ JsonNode* parseObject(FILE* jsonFile, TokenManager* manager, ParserError* error)
   {
     token = advance(manager);
 
-    // Get key
+    // Get object's pair key
     if (token == NULL || token->type != STRING_LEX)
     {
       if (error)
@@ -97,7 +97,7 @@ JsonNode* parseObject(FILE* jsonFile, TokenManager* manager, ParserError* error)
     }
 
     JsonNode* strNode = parseString(jsonFile, token);
-    node->key = strNode->value.v_string;
+    char* pairKey = strNode->value.v_string;
     free(strNode);
 
     token = advance(manager);
@@ -109,11 +109,13 @@ JsonNode* parseObject(FILE* jsonFile, TokenManager* manager, ParserError* error)
         if (token != NULL)
           error->token = *token;
       }
+      free(pairKey);
       return node;
     }
 
-    // Get value
+    // Get object's pair value
     JsonNode* valueNode = parse(jsonFile, manager, error);
+    valueNode->key = pairKey;
     if (valueNode == NULL && error && error->type != NO_PARSER_ERROR)
       return node;
     addObjectPair(node, valueNode);
@@ -213,6 +215,16 @@ JsonNode* parseArray(FILE* jsonFile, TokenManager* manager, ParserError* error)
 JsonNode* parseString(FILE* jsonFile, Token* token)
 {
   JsonNode* node = createJsonNode(STRING_NODE);
+
+  // strLength has some implicit calculations
+  // +1 for '\0' and -2 for the double quotes however
+  // since startPos starts after the first double quote,
+  // we have +1 for '\0' and -1 for the ending double quote which is 0
+  size_t strLength = token->endPos - token->startPos;
+  node->value.v_string = (char*)malloc(strLength);
+  fseek(jsonFile, token->startPos + 1, SEEK_SET);
+  fgets(node->value.v_string, strLength, jsonFile);
+
   return node;
 }
 
