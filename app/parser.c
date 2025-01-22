@@ -39,3 +39,38 @@ JSONNode* parse(TokenManager* manager, ParserError* error)
     return NULL;
   }
 }
+
+JSONNode* parseObject(TokenManager* manager)
+{
+  return NULL;
+}
+
+JSONNode* parseArray(TokenManager* manager)
+{
+  return NULL;
+}
+
+JSONNode* parseString(Token* token)
+{
+  return NULL;
+}
+
+JSONNode* parseInteger(Token* token)
+{
+  return NULL;
+}
+
+JSONNode* parseDouble(Token* token)
+{
+  return NULL;
+}
+
+JSONNode* parseBoolean(Token* token)
+{
+  return NULL;
+}
+
+JSONNode* parseNull(Token* token)
+{
+  return NULL;
+}
