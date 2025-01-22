@@ -99,7 +99,7 @@ typedef struct JsonNode
   size_t vSize;
 } JsonNode;
 
-JsonNode* createJsonNode();
+JsonNode* createJsonNode(JsonNodeType type);
 
 typedef enum ParserErrorType
 {
