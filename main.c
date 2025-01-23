@@ -71,7 +71,11 @@ int main()
   LexError lexError;
   TokenManager* manager = lex(jsonFile, &lexError);
 
-  printLexError(&lexError);
+  if (lexError.type != NO_LEX_ERROR)
+  {
+    printLexError(&lexError);
+    exit(2);
+  }
 
   printf("LEXICAL ANALYSIS\n");
   printTokens(manager);
@@ -80,7 +84,11 @@ int main()
   ParserError parserError;
   JsonNode* root = parse(jsonFile, manager, &parserError);
 
-  printParseError(&parserError);
+  if (parserError.type != NO_PARSER_ERROR)
+  {
+    printParseError(&parserError);
+    exit(3);
+  }
 
   printf("SYNTACTIC ANALYSIS\n");
   traverse(root, 0, false);
