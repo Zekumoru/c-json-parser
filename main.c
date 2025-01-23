@@ -78,7 +78,6 @@ int main()
   printf("\n");
 
   ParserError parserError;
-  parserError.type = NO_PARSER_ERROR;
   JsonNode* root = parse(jsonFile, manager, &parserError);
 
   printParseError(&parserError);

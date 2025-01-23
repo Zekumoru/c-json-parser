@@ -60,6 +60,8 @@ JsonNode* parse_helper(FILE* jsonFile, TokenManager* manager, ParserError* error
 
 JsonNode* parse(FILE* jsonFile, TokenManager* manager, ParserError* error)
 {
+  if (error)
+    error->type = NO_PARSER_ERROR;
   JsonNode* root = parse_helper(jsonFile, manager, error);
   root->isRoot = true;
   return root;
