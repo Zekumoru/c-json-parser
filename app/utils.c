@@ -141,7 +141,7 @@ void printWithIndent(size_t indent, const char* fmt, ...)
   va_end(args);
 }
 
-void traverse(JsonNode* node, size_t indent, bool isArrayNode)
+void traverse(JsonNode* node, size_t indent, bool isParentArray)
 {
   if (node == NULL)
     return;
@@ -150,31 +150,31 @@ void traverse(JsonNode* node, size_t indent, bool isArrayNode)
   {
   case NULL_NODE:
     printWithIndent(indent, "- ");
-    if (!isArrayNode)
+    if (!isParentArray)
       printf("%s: ", node->key);
     printf("(null)\n");
     break;
   case STRING_NODE:
     printWithIndent(indent, "- ");
-    if (!isArrayNode)
+    if (!isParentArray)
       printf("%s: ", node->key);
     printf("%s\n", node->value.v_string);
     break;
   case INTEGER_NODE:
     printWithIndent(indent, "- ");
-    if (!isArrayNode)
+    if (!isParentArray)
       printf("%s: ", node->key);
     printf("%d\n", node->value.v_int);
     break;
   case DOUBLE_NODE:
     printWithIndent(indent, "- ");
-    if (!isArrayNode)
+    if (!isParentArray)
       printf("%s: ", node->key);
     printf("%lf\n", node->value.v_double);
     break;
   case BOOLEAN_NODE:
     printWithIndent(indent, "- ");
-    if (!isArrayNode)
+    if (!isParentArray)
       printf("%s: ", node->key);
     printf("%s\n", node->value.v_bool ? "true" : "false");
     break;
@@ -182,11 +182,10 @@ void traverse(JsonNode* node, size_t indent, bool isArrayNode)
   case ARRAY_NODE:
   {
     JsonNode* nodeList;
-    bool hasNoKey = false;
+    bool hasNoKey = node->key == NULL;
 
     if (node->type == OBJECT_NODE)
     {
-      hasNoKey = node->key == NULL;
       if (!hasNoKey)
         printWithIndent(indent, "- %s:", node->key);
       nodeList = node->value.v_object;
@@ -198,16 +197,22 @@ void traverse(JsonNode* node, size_t indent, bool isArrayNode)
     }
     else
     {
-      printWithIndent(indent, "- %s:", node->key);
+      if (!(node->isRoot || hasNoKey))
+        printWithIndent(indent, "- %s:", node->key);
       nodeList = node->value.v_array;
 
       if (node->vSize == 0)
         printf(" []");
-      printf("\n");
+      if (!hasNoKey)
+        printf("\n");
     }
 
+    size_t indentAdd = hasNoKey ? 0 : 2;
+    if (!node->isRoot && hasNoKey && node->type == ARRAY_NODE)
+      indentAdd += 2;
+
     for (size_t i = 0; i < node->vSize; i++)
-      traverse(&nodeList[i], indent + (hasNoKey ? 0 : 2), node->type == ARRAY_NODE);
+      traverse(&nodeList[i], indent + indentAdd, node->type == ARRAY_NODE);
     break;
   }
   default:
