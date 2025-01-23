@@ -31,6 +31,14 @@ JsonNode* parse_helper(FILE* jsonFile, TokenManager* manager, ParserError* error
   if (error && error->type != NO_PARSER_ERROR)
     return NULL;
 
+  if (manager->size == 0 || manager->tokens == NULL)
+  {
+    error->type = NO_TOKEN_FOUND;
+    error->token.lineCount = 0;
+    error->token.charCount = 0;
+    return NULL;
+  }
+
   Token* token = advance(manager);
   if (token == NULL)
     return NULL;
@@ -63,7 +71,8 @@ JsonNode* parse(FILE* jsonFile, TokenManager* manager, ParserError* error)
   if (error)
     error->type = NO_PARSER_ERROR;
   JsonNode* root = parse_helper(jsonFile, manager, error);
-  root->isRoot = true;
+  if (root != NULL)
+    root->isRoot = true;
   return root;
 }
 

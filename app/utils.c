@@ -33,6 +33,9 @@ void printLexError(LexError* error)
 {
   switch (error->type)
   {
+  case EMPTY_FILE:
+    printError("Syntax Error", error->lineCount, error->charCount, "Expected JSON content");
+    break;
   case EXPECTED_END_OF_STRING:
     printError("Syntax Error", error->lineCount, error->charCount, "Expected end-of-string double quotes");
     break;
@@ -55,6 +58,9 @@ void printParseError(ParserError* error)
 {
   switch (error->type)
   {
+  case NO_TOKEN_FOUND:
+    printError("Syntax Error", error->token.lineCount, error->token.charCount, "Expected token but none found");
+    break;
   case INVALID_INTEGER_LITERAL:
     printError("Syntax Error", error->token.lineCount, error->token.charCount, "Invalid integer literal");
     break;

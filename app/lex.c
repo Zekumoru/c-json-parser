@@ -188,5 +188,12 @@ TokenManager* lex(FILE* jsonFile, LexError* error)
     }
   }
 
+  if (lineCount == 0 && charCount == 0 && error)
+  {
+    error->type = EMPTY_FILE;
+    error->charCount = 0;
+    error->lineCount = 0;
+  }
+
   return manager;
 }

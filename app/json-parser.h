@@ -79,6 +79,7 @@ Token* createToken(TokenManager* manager);
 typedef enum LexErrorType
 {
   NO_LEX_ERROR = 0,        /**< Nessun errore rilevato */
+  EMPTY_FILE,              /**< File vuoto */
   EXPECTED_END_OF_STRING,  /**< Fine stringa attesa ma non trovata */
   INVALID_BOOLEAN_LITERAL, /**< Literal booleano non valido */
   INVALID_NULL_LITERAL,    /**< Literal null non valido */
@@ -166,6 +167,7 @@ JsonNode* createJsonNode(JsonNodeType type);
 typedef enum ParserErrorType
 {
   NO_PARSER_ERROR = 0,          /**< Nessun errore */
+  NO_TOKEN_FOUND,               /**< Nessun token trovato */
   INVALID_INTEGER_LITERAL,      /**< Numero intero non valido */
   INVALID_DOUBLE_LITERAL,       /**< Numero decimale non valido */
   EXPECTED_OBJECT_KEY,          /**< Attesa chiave oggetto */
