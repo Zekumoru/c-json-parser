@@ -3,6 +3,7 @@
 #include <math.h>
 #include <stdarg.h>
 #include <stdlib.h>
+#include <string.h>
 
 void* vec_alloc(void* vec, size_t* cap, const size_t size, const size_t elemSize)
 {
@@ -22,6 +23,22 @@ void* vec_alloc(void* vec, size_t* cap, const size_t size, const size_t elemSize
     free(vec);
 
   return newVec;
+}
+
+char* vstrdup(const char* fmt, ...)
+{
+  va_list args;
+  va_start(args, fmt);
+  int length = vsnprintf(NULL, 0, fmt, args) + 1; // +1 per '\0'
+  va_end(args);
+
+  char* str = (char*)malloc(length);
+
+  va_start(args, fmt);
+  vsnprintf(str, length, fmt, args);
+  va_end(args);
+
+  return str;
 }
 
 void printError(const char* errorType, size_t lineCount, size_t charCount, const char* message)

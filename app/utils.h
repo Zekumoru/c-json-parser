@@ -24,6 +24,26 @@
 void* vec_alloc(void* vec, size_t* cap, const size_t size, const size_t elemSize);
 
 /**
+ * @file vstrdup.h
+ * @brief Funzione per creare una stringa terminata con null formattata secondo specifiche.
+ */
+
+/**
+ * @brief Crea e restituisce una stringa terminata con null, formattata secondo le specifiche fornite.
+ *
+ * Questa funzione consente di formattare una stringa utilizzando specificatori di formato,
+ * in modo simile a printf, e di restituirla come puntatore a una nuova stringa allocata dinamicamente.
+ *
+ * @param fmt Una stringa che può contenere specificatori di formato.
+ * @param ... Argomenti addizionali utilizzati per i specificatori di formato nella stringa.
+ * @return Un puntatore a una stringa terminata con null che deve essere liberata manualmente con `free`.
+ * @warning Non dimenticare di liberare la memoria del puntatore restituito per evitare perdite di memoria.
+ *
+ * @note La memoria viene allocata dinamicamente, quindi il chiamante è responsabile della sua gestione.
+ */
+char* vstrdup(const char* fmt, ...);
+
+/**
  * @brief Stampa un messaggio di errore con dettagli di posizione.
  *
  * @param errorType Tipo di errore come stringa.
