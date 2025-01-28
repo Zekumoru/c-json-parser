@@ -41,68 +41,70 @@ char* vstrdup(const char* fmt, ...)
   return str;
 }
 
-void printError(const char* errorType, size_t lineCount, size_t charCount, const char* message)
+char* buildErrorString(const char* errorType, size_t lineCount, size_t charCount, const char* message)
 {
-  printf("Error: %s at line %ld, column %ld: %s\n", errorType, lineCount, charCount, message);
+  return vstrdup("Error: %s at line %ld, column %ld: %s\n", errorType, lineCount, charCount, message);
 }
 
-void printLexError(LexError* error)
+char* buildLexStringError(LexError* error)
 {
   switch (error->type)
   {
   case EMPTY_FILE:
-    printError("Syntax Error", error->lineCount, error->charCount, "Expected JSON content");
-    break;
+    return buildErrorString("Syntax Error", error->lineCount, error->charCount, "Expected JSON content");
+
   case EXPECTED_END_OF_STRING:
-    printError("Syntax Error", error->lineCount, error->charCount, "Expected end-of-string double quotes");
-    break;
+    return buildErrorString("Syntax Error", error->lineCount, error->charCount, "Expected end-of-string double quotes");
+
   case INVALID_BOOLEAN_LITERAL:
-    printError("Syntax Error", error->lineCount, error->charCount, "Invalid Boolean literal");
-    break;
+    return buildErrorString("Syntax Error", error->lineCount, error->charCount, "Invalid Boolean literal");
+
   case INVALID_NULL_LITERAL:
-    printError("Syntax Error", error->lineCount, error->charCount, "Invalid Boolean literal");
-    break;
+    return buildErrorString("Syntax Error", error->lineCount, error->charCount, "Invalid Boolean literal");
+
   case UNEXPECTED_END_OF_INPUT:
-    printError("Syntax Error", error->lineCount, error->charCount, "Unexpected end-of-input token");
-    break;
+    return buildErrorString("Syntax Error", error->lineCount, error->charCount, "Unexpected end-of-input token");
+
   case UNEXPECTED_CHARACTER:
-    printError("Syntax Error", error->lineCount, error->charCount, "Unexpected character");
-    break;
+    return buildErrorString("Syntax Error", error->lineCount, error->charCount, "Unexpected character");
   }
+
+  return NULL;
 }
 
-void printParseError(ParserError* error)
+char* buildParseStringError(ParserError* error)
 {
   switch (error->type)
   {
   case NO_TOKEN_FOUND:
-    printError("Syntax Error", error->token.lineCount, error->token.charCount, "Expected token but none found");
-    break;
+    return buildErrorString("Syntax Error", error->token.lineCount, error->token.charCount, "Expected token but none found");
+
   case INVALID_INTEGER_LITERAL:
-    printError("Syntax Error", error->token.lineCount, error->token.charCount, "Invalid integer literal");
-    break;
+    return buildErrorString("Syntax Error", error->token.lineCount, error->token.charCount, "Invalid integer literal");
+
   case INVALID_DOUBLE_LITERAL:
-    printError("Syntax Error", error->token.lineCount, error->token.charCount, "Invalid double literal");
-    break;
+    return buildErrorString("Syntax Error", error->token.lineCount, error->token.charCount, "Invalid double literal");
+
   case EXPECTED_OBJECT_KEY:
-    printError("Syntax Error", error->token.lineCount, error->token.charCount, "Expected object key");
-    break;
+    return buildErrorString("Syntax Error", error->token.lineCount, error->token.charCount, "Expected object key");
+
   case EXPECTED_END_OF_OBJECT_BRACE:
-    printError("Syntax Error", error->token.lineCount, error->token.charCount, "Expected end-of-object brace");
-    break;
+    return buildErrorString("Syntax Error", error->token.lineCount, error->token.charCount, "Expected end-of-object brace");
+
   case EXPECTED_END_OF_ARRAY_BRACE:
-    printError("Syntax Error", error->token.lineCount, error->token.charCount, "Expected end-of-array brace");
-    break;
+    return buildErrorString("Syntax Error", error->token.lineCount, error->token.charCount, "Expected end-of-array brace");
+
   case EXPECTED_COLON:
-    printError("Syntax Error", error->token.lineCount, error->token.charCount, "Expected colon after object key");
-    break;
+    return buildErrorString("Syntax Error", error->token.lineCount, error->token.charCount, "Expected colon after object key");
+
   case EXPECTED_COMMA:
-    printError("Syntax Error", error->token.lineCount, error->token.charCount, "Expected comma");
-    break;
+    return buildErrorString("Syntax Error", error->token.lineCount, error->token.charCount, "Expected comma");
+
   case UNEXPECTED_TOKEN:
-    printError("Syntax Error", error->token.lineCount, error->token.charCount, "Unexpected token");
-    break;
+    return buildErrorString("Syntax Error", error->token.lineCount, error->token.charCount, "Unexpected token");
   }
+
+  return NULL;
 }
 
 void printTokens(TokenManager* manager)

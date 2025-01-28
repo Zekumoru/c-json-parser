@@ -68,12 +68,16 @@ int main()
     exit(1);
   }
 
+  char* strError;
+
   LexError lexError;
   TokenManager* manager = lex(jsonFile, &lexError);
+  strError = buildLexStringError(&lexError);
 
-  if (lexError.type != NO_LEX_ERROR)
+  if (strError)
   {
-    printLexError(&lexError);
+    printf("%s", strError);
+    free(strError);
     exit(2);
   }
 
@@ -83,10 +87,12 @@ int main()
 
   ParserError parserError;
   JsonNode* root = parse(jsonFile, manager, &parserError);
+  strError = buildParseStringError(&parserError);
 
-  if (parserError.type != NO_PARSER_ERROR)
+  if (strError)
   {
-    printParseError(&parserError);
+    printf("%s", strError);
+    free(strError);
     exit(3);
   }
 

@@ -50,22 +50,28 @@ char* vstrdup(const char* fmt, ...);
  * @param lineCount Numero di linea dell'errore.
  * @param charCount Numero di carattere dell'errore.
  * @param message Messaggio di errore dettagliato.
+ * @return Un puntatore alla stringa di errore che deve essere liberata manualmente con `free`.
+ * @warning Non dimenticare di liberare la memoria del puntatore restituito per evitare perdite di memoria.
  */
-void printError(const char* errorType, size_t lineCount, size_t charCount, const char* message);
+char* buildErrorString(const char* errorType, size_t lineCount, size_t charCount, const char* message);
 
 /**
  * @brief Stampa un errore lessicale basato su una struttura LexError.
  *
  * @param error Puntatore alla struttura contenente i dettagli dell'errore lessicale.
+ * @return Un puntatore alla stringa di errore che deve essere liberata manualmente con `free`.
+ * @warning Non dimenticare di liberare la memoria del puntatore restituito per evitare perdite di memoria.
  */
-void printLexError(LexError* error);
+char* buildLexStringError(LexError* error);
 
 /**
  * @brief Stampa un errore di parsing basato su una struttura ParserError.
  *
  * @param error Puntatore alla struttura contenente i dettagli dell'errore di parsing.
+ * @return Un puntatore alla stringa di errore che deve essere liberata manualmente con `free`.
+ * @warning Non dimenticare di liberare la memoria del puntatore restituito per evitare perdite di memoria.
  */
-void printParseError(ParserError* error);
+char* buildParseStringError(ParserError* error);
 
 /**
  * @brief Stampa tutti i token presenti nella struttura TokenManager.
