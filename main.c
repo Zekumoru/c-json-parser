@@ -1,5 +1,7 @@
 /**
  * JSON Parser in C
+ * @author Zekumoru
+ * @version 0.4
  *
  * Questo programma implementa un parser JSON scritto in linguaggio C,
  * che esegue sia l'analisi lessicale che sintattica di un file JSON.
