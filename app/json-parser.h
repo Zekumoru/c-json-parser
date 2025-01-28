@@ -254,6 +254,31 @@ JsonNode* parseNull(FILE* jsonFile, Token* token);
 JsonNode* parse(FILE* jsonFile, TokenManager* manager, ParserError* error);
 
 /**
+ * @brief Analizza un file JSON e restituisce la radice della struttura
+ *        ad albero rappresentante il contenuto del file.
+ *
+ * Questa funzione legge un file JSON specificato, effettua il processo di
+ * tokenizzazione e parsing e restituisce un puntatore alla struttura ad albero
+ * rappresentante i dati JSON. In caso di errore, restituisce `NULL` e un
+ * messaggio di errore opzionale.
+ *
+ * @param filename Il percorso del file JSON da analizzare.
+ * @param strError Puntatore a una stringa in cui verrà memorizzato un
+ *                 messaggio di errore in caso di fallimento.
+ *                 Può essere `NULL` se non è necessario ottenere
+ *                 il messaggio di errore.
+ * @return Un puntatore alla radice della struttura ad albero JSON (`JsonNode`)
+ *         in caso di successo, oppure `NULL` in caso di errore.
+ * @warning Il chiamante è responsabile della gestione della memoria per la
+ *          struttura JSON restituita e per eventuali errori memorizzati in
+ *          `strError`.
+ * @note La funzione chiude automaticamente il file JSON aperto,
+ *       indipendentemente dal risultato.
+ *
+ */
+JsonNode* parseJsonFile(const char* filename, char** strError);
+
+/**
  * @brief Libera la memoria allocata per un albero JSON.
  */
 void freeJsonTree(JsonNode* node);

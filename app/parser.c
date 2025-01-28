@@ -26,6 +26,45 @@ Token* advance(TokenManager* manager)
   return token;
 }
 
+JsonNode* parseJsonFile(const char* filename, char** strError)
+{
+  FILE* jsonFile = fopen(filename, "r");
+
+  if (!jsonFile)
+  {
+    if (strError != NULL)
+      *strError = vstrdup("Error: Cannot open file '%s'", filename);
+    return NULL;
+  }
+
+  LexError lexError;
+  TokenManager* manager = lex(jsonFile, &lexError);
+
+  if (lexError.type != NO_LEX_ERROR)
+  {
+    if (strError != NULL)
+      *strError = buildLexStringError(&lexError);
+    deleteTokenManager(manager);
+    fclose(jsonFile);
+    return NULL;
+  }
+
+  ParserError parserError;
+  JsonNode* root = parse(jsonFile, manager, &parserError);
+
+  if (parserError.type != NO_PARSER_ERROR)
+  {
+    if (strError != NULL)
+      *strError = buildParseStringError(&parserError);
+    freeJsonTree(root);
+    root = NULL;
+  }
+
+  deleteTokenManager(manager);
+  fclose(jsonFile);
+  return root;
+}
+
 JsonNode* parse_helper(FILE* jsonFile, TokenManager* manager, ParserError* error)
 {
   if (error && error->type != NO_PARSER_ERROR)

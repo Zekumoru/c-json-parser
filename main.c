@@ -60,48 +60,20 @@
 
 int main()
 {
-  FILE* jsonFile = fopen("sample.json", "r");
+  char* strError = NULL;
+  JsonNode* root = parseJsonFile("sample.json", &strError);
 
-  if (!jsonFile)
+  if (root)
   {
-    perror("Could not open json file.");
-    exit(1);
+    printf("Showing JSON file:\n");
+    traverse(root, 0, false);
+    freeJsonTree(root);
   }
-
-  char* strError;
-
-  LexError lexError;
-  TokenManager* manager = lex(jsonFile, &lexError);
-  strError = buildLexStringError(&lexError);
-
-  if (strError)
+  else
   {
     printf("%s", strError);
-    free(strError);
-    exit(2);
   }
 
-  printf("LEXICAL ANALYSIS\n");
-  printTokens(manager);
-  printf("\n");
-
-  ParserError parserError;
-  JsonNode* root = parse(jsonFile, manager, &parserError);
-  strError = buildParseStringError(&parserError);
-
-  if (strError)
-  {
-    printf("%s", strError);
-    free(strError);
-    exit(3);
-  }
-
-  printf("SYNTACTIC ANALYSIS\n");
-  traverse(root, 0, false);
-
-  freeJsonTree(root);
-  deleteTokenManager(manager);
-  fclose(jsonFile);
-
+  free(strError);
   return 0;
 }

@@ -57,6 +57,7 @@
     "*.tpp": "cpp",
     "stdbool.h": "c",
     "stdarg.h": "c",
-    "math.h": "c"
+    "math.h": "c",
+    "string.h": "c"
   }
 }
